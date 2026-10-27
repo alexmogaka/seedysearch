@@ -1,0 +1,560 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seedy Search</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-image: url("alex.jpg");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #202124;
+    min-height: 100vh;
+}
+
+
+        header {
+            display: flex;
+            justify-content: flex-end;
+            gap: 20px;
+            padding: 20px 30px;
+        }
+
+        header a {
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+        
+        
+#themeToggle {
+    padding: 10px 16px;
+    border: 1px solid #888;
+    border-radius: 25px;
+    background: #222;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#themeToggle:hover {
+    opacity: 0.8;
+}
+        }
+
+
+        header a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            min-height: 75vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .logo {
+            font-size: clamp(42px, 9vw, 70px);
+            font-weight: bold;
+            letter-spacing: -3px;
+            margin-bottom: 30px;
+        }
+
+        .logo span:nth-child(1),
+        .logo span:nth-child(4) {
+            color: #4285f4;
+        }
+
+        .logo span:nth-child(2) {
+            color: #ea4335;
+        }
+
+        .logo span:nth-child(3) {
+            color: #fbbc05;
+        }
+
+        .logo span:nth-child(5) {
+            color: #34a853;
+        }
+
+    
+.search-box {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 580px;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 35px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease;
+}
+
+.search-box:hover,
+.search-box:focus-within {
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.3);
+}
+
+
+        .search-box input {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            outline: none;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .search-box button {
+            border: none;
+            background: transparent;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .buttons {
+            margin-top: 28px;
+            display: flex;
+            gap: 12px;
+        }
+
+    .buttons button {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 25px;
+    background: #1a73e8;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.buttons button:hover {
+    background: #1557b0;
+    transform: translateY(-2px);
+}
+
+        .buttons button:hover {
+            border-color: #dadce0;
+        }
+
+        footer {
+            background: #f2f2f2;
+            padding: 18px 25px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        footer p {
+            margin: 0;
+        }
+        .marquee-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 15px 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 1000;
+}
+
+.marquee-track {
+    display: inline-flex;
+    gap: 70px;
+    min-width: max-content;
+    animation: marquee-move 22s linear infinite;
+}
+
+.marquee-track span {
+    font-size: 18px;
+    font-weight: bold;
+    animation: color-change 5s linear infinite;
+}
+
+.marquee-track span:nth-child(2) {
+    animation-delay: 1s;
+}
+
+.marquee-track span:nth-child(3) {
+    animation-delay: 2s;
+}
+
+@keyframes marquee-move {
+    from {
+        transform: translateX(100vw);
+    }
+
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes color-change {
+    0%   { color: #ff3333; }
+    20%  { color: #ffcc00; }
+    40%  { color: #00ff88; }
+    60%  { color: #00ccff; }
+    80%  { color: #ff66ff; }
+    100% { color: #ff3333; }
+}
+
+body.dark-mode {
+    color: #ffffff;
+}
+
+body.dark-mode .search-box {
+    background: rgba(25, 25, 35, 0.9);
+    border-color: #888;
+}
+
+body.dark-mode .search-box input {
+    background: transparent;
+    color: #ffffff;
+}
+
+body.dark-mode .search-box input::placeholder {
+    color: #dddddd;
+}
+
+body.dark-mode header a {
+    color: #ffffff;
+}
+
+body.dark-mode #themeToggle {
+    background: #f5f5f5;
+    color: #222222;
+}
+
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="https://www.bing.com/">Images</a>
+    <a href="https://www.bing.com/">Web</a>
+    <button id="themeToggle" type="button">
+        🌙 Dark Mode
+    </button>
+</header>
+
+
+    <main>
+        
+        <div id="liveClock" style="text-align:center; margin-bottom:25px; font-size:18px; font-weight:bold; color:white; text-shadow:1px 1px 4px black;">
+            Loading date and time...
+        </div>
+
+        <div class="logo" aria-label="Seedy Search">
+            <span>S</span><span>e</span><span>e</span><span>d</span><span>y</span>
+            <span style="color:#4285f4"> Search</span>
+        </div>
+
+        <form id="searchForm" style="width:100%; max-width:580px;">
+            <div class="search-box">
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="Search the web with Seedy Search"
+                    aria-label="Search the web"
+                    required
+                >
+                <button type="submit" aria-label="Search">🔍</button>
+            </div>
+            
+            <div id="suggestions"
+                 style="display:none; width:100%; background:white; color:#222; border-radius:12px; margin-top:8px; padding:8px; box-shadow:0 4px 12px #0003;">
+            </div>
+
+
+            <div class="buttons">
+                <button type="submit">Seedy Search</button>
+                <button type="button" id="luckyButton">I'm Feeling Lucky</button>
+            </div>
+            
+            <div id="searchHistory" style="width:100%; max-width:580px; margin-top:25px; color:white; text-shadow:1px 1px 3px black;">
+                 <h3>Recent Searches</h3>
+                 <ul id="historyList" style="padding-left:25px;"></ul>
+                 <button id="clearHistory" type="button" style="padding:8px 14px; border-radius:20px; cursor:pointer;">
+                       Clear History
+                 </button>
+            </div>
+
+        </form>
+    </main>
+
+<footer class="marquee-footer">
+    <div class="marquee-track">
+        <span>Created by Seedy Alex Mogaka</span>
+        <span>Course: Software Development</span>
+        <span>Welcome to Seedy Search</span>
+        <span>Created by Seedy Alex Mogaka</span>
+        <span>Course: Software Development</span>
+    </div>
+</footer>
+
+
+
+<script>
+    const searchForm = document.getElementById("searchForm");
+    const searchInput = document.getElementById("searchInput");
+    const luckyButton = document.getElementById("luckyButton");
+    const themeToggle = document.getElementById("themeToggle");
+    const suggestionsBox = document.getElementById("suggestions");
+
+    const defaultSuggestions = [
+        "HTML tutorials",
+        "CSS tutorials",
+        "JavaScript tutorials",
+        "Python programming",
+        "Web development",
+        "Artificial intelligence",
+        "Mobile app development",
+        "Free online courses",
+        "Computer programming",
+        "Technology news"
+    ];
+
+    function getHistory() {
+        try {
+            return JSON.parse(
+                localStorage.getItem("seedySearchHistory") || "[]"
+            );
+        } catch (error) {
+            return [];
+        }
+    }
+
+    function searchWeb(lucky = false) {
+        const query = searchInput.value.trim();
+
+        if (!query) {
+            searchInput.focus();
+            return;
+        }
+
+        saveSearch(query);
+
+        const url = "https://www.bing.com/search?q="
+            + encodeURIComponent(query);
+
+        window.location.href = lucky
+            ? "https://www.bing.com/search?q="
+                + encodeURIComponent(query)
+            : url;
+    }
+
+    function saveSearch(query) {
+        let history = getHistory();
+
+        history = history.filter(
+            item => item.toLowerCase() !== query.toLowerCase()
+        );
+
+        history.unshift(query);
+        history = history.slice(0, 10);
+
+        localStorage.setItem(
+            "seedySearchHistory",
+            JSON.stringify(history)
+        );
+
+        displayHistory();
+    }
+
+    function displayHistory() {
+        const historyList = document.getElementById("historyList");
+
+        if (!historyList) return;
+
+        const history = getHistory();
+        historyList.innerHTML = "";
+
+        history.forEach(query => {
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+
+            link.textContent = query;
+            link.href = "https://www.bing.com/search?q="
+                + encodeURIComponent(query);
+            link.style.color = "white";
+            link.style.cursor = "pointer";
+
+            item.appendChild(link);
+            historyList.appendChild(item);
+        });
+    }
+
+    function showSuggestions() {
+        if (!suggestionsBox) return;
+
+        const query = searchInput.value.trim().toLowerCase();
+
+        if (!query) {
+            suggestionsBox.style.display = "none";
+            suggestionsBox.innerHTML = "";
+            return;
+        }
+
+        const allSuggestions = [
+            ...getHistory(),
+            ...defaultSuggestions
+        ];
+
+        const matches = [...new Set(allSuggestions)]
+            .filter(item =>
+                item.toLowerCase().includes(query)
+            )
+            .slice(0, 6);
+
+        suggestionsBox.innerHTML = "";
+
+        if (matches.length === 0) {
+            suggestionsBox.style.display = "none";
+            return;
+        }
+
+        matches.forEach(suggestion => {
+            const button = document.createElement("button");
+
+            button.type = "button";
+            button.textContent = "🔎 " + suggestion;
+            button.style.display = "block";
+            button.style.width = "100%";
+            button.style.padding = "10px";
+            button.style.border = "none";
+            button.style.borderRadius = "6px";
+            button.style.background = "transparent";
+            button.style.color = "#222";
+            button.style.textAlign = "left";
+            button.style.cursor = "pointer";
+            button.style.fontSize = "15px";
+
+            button.addEventListener("mouseenter", function() {
+                button.style.background = "#e8f0fe";
+            });
+
+            button.addEventListener("mouseleave", function() {
+                button.style.background = "transparent";
+            });
+
+            button.addEventListener("click", function() {
+                searchInput.value = suggestion;
+                suggestionsBox.style.display = "none";
+                searchWeb();
+            });
+
+            suggestionsBox.appendChild(button);
+        });
+
+        suggestionsBox.style.display = "block";
+    }
+
+    searchInput.addEventListener("input", showSuggestions);
+
+    searchInput.addEventListener("keydown", function(event) {
+        if (event.key === "Escape" && suggestionsBox) {
+            suggestionsBox.style.display = "none";
+        }
+    });
+
+    document.addEventListener("click", function(event) {
+        if (
+            suggestionsBox &&
+            !suggestionsBox.contains(event.target) &&
+            event.target !== searchInput
+        ) {
+            suggestionsBox.style.display = "none";
+        }
+    });
+
+    searchForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        searchWeb();
+    });
+
+    const clearHistoryButton = document.getElementById("clearHistory");
+
+    if (clearHistoryButton) {
+        clearHistoryButton.addEventListener("click", function() {
+            localStorage.removeItem("seedySearchHistory");
+            displayHistory();
+            showSuggestions();
+        });
+    }
+
+    if (luckyButton) {
+        luckyButton.addEventListener("click", function() {
+            searchWeb(true);
+        });
+    }
+
+    function setTheme(dark) {
+        document.body.classList.toggle("dark-mode", dark);
+
+        themeToggle.textContent = dark
+            ? "☀️ Light Mode"
+            : "🌙 Dark Mode";
+
+        themeToggle.setAttribute("aria-pressed", String(dark));
+    }
+
+    themeToggle.addEventListener("click", function() {
+        const isDark =
+            !document.body.classList.contains("dark-mode");
+
+        setTheme(isDark);
+    });
+
+    setTheme(false);
+    displayHistory();
+
+    function updateClock() {
+        const clock = document.getElementById("liveClock");
+
+        if (!clock) return;
+
+        const now = new Date();
+
+        const date = now.toLocaleDateString("en-KE", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        });
+
+        const time = now.toLocaleTimeString("en-KE", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true
+        });
+
+        clock.textContent = date + " | " + time;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+</script>
+
+
+</body>
+</html>
